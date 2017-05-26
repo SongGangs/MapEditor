@@ -33,7 +33,7 @@ $(function () {
     });
     Window.MyMap.addControl(geolocationControl);
 
-	$.post("/OurMap/API/Map/QueryOverlay"
+	$.post("/MapEditor/API/Map/QueryOverlay"
 		, function(data) {
 			if (data.msg == "success") {
 				var shpeCounts = data.ShapeSize;
@@ -42,17 +42,18 @@ $(function () {
 					var strs = new Array(); //定义一数组 
 					strs = str.split("*"); //字符分割 
 					var points = [];
-					var average_x=0;
-					var average_y=0;
+					var x_min=10000,y_min=10000,x_max=0,y_max=0;
 					for (var j = 0; j < strs.length; j++) {
 						var x = strs[j].split(",")[0];
 						var y = strs[j].split(",")[1];
 						points.push(new BMap.Point(x, y));
-						average_x=average_x+parseFloat(x);
-						average_y=average_y+parseFloat(y);
+						x_min>x?x_min=x:x_min=x_min;
+						y_min>y?y_min=y:y_min=y_min;
+						x_max<x?x_max=x:x_max=x_max;
+						y_max<y?y_max=y:y_max=y_max;
+						//average_x=average_x+parseFloat(x);
+						//average_y=average_y+parseFloat(y);
 					}
-					average_x=average_x/strs.length;
-					average_y=average_y/strs.length;
 					var polygon = new BMap.Polygon(points, {
 						strokeColor : "blue",
 						strokeWeight : 2,
@@ -61,7 +62,7 @@ $(function () {
 
 					Window.MyMap.addOverlay(polygon); //增加多边形
 					var str="公建："+data["gongjian" + i]+"<br />"+"医务："+data["yiwu" + i]+"<br />"+"肄业："+data["yiye" + i]+"<br />"+"社区："+data["shequ" + i]+"<br />"+"上门："+data["goHomeNums" + i]+"<br />"+"报名："+data["goSchoolNums" + i]
-					showText(average_x,average_y,str);
+					showText((parseFloat(x_min)+parseFloat(x_max))/2,(parseFloat(y_min)+parseFloat(y_max))/2,str);
 				}
 			} else {
 				alert("数据错误");
@@ -72,12 +73,12 @@ $(function () {
 		var point= new BMap.Point(x,y);
 		var opts = {
 			position : point, // 指定文本标注所在的地理位置
-			offset : new BMap.Size(-30, -60) //设置文本偏移量
+			offset : new BMap.Size(-30, -90) //设置文本偏移量
 		}
 		var label = new BMap.Label(str, opts); // 创建文本标注对象
 		label.setStyle({
 			color : "red",
-			fontSize : "20px",
+			fontSize : "18px",
 			fillColor : "red", //填充颜色。当参数为空时，圆形将没有填充效果。
 		});
 		Window.MyMap.addOverlay(label);
@@ -190,7 +191,7 @@ $(function () {
 			i != 6 ? str = str + a[i] + "*" : str = str + a[i];
 		}
 
-		$.post("/OurMap/API/Map/SaveInfo"
+		$.post("/MapEditor/API/Map/SaveInfo"
 			, {
 				info : str
 			}, function(data) {

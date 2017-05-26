@@ -34,7 +34,7 @@
 	 }
 	});
 	function modifyData(oldstr,newstr) {
-		$.post("/OurMap/API/Map/Modify",{
+		$.post("/MapEditor/API/Map/Modify",{
 			oldstr:oldstr,
 			newstr:newstr
 		},function(data){
@@ -47,7 +47,7 @@
 	}
 	
 	function deleteData(str,t) {
-		$.post("/OurMap/API/Map/Delete",{
+		$.post("/MapEditor/API/Map/Delete",{
 			str:str
 		},function(data){
 			if (data.msg == "success") {
